@@ -522,9 +522,10 @@ click-wheel[data-pressed="select"] .center { filter: brightness(0.93); }
 @media (hover: hover) { .stage > .hint .touch { display: none; } }
 .credit {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.45em;
+  gap: 0 0.45em;
   margin: 6px 0 0;
   padding-bottom: env(safe-area-inset-bottom);
   font: 500 11px/20px var(--ui);
@@ -555,10 +556,49 @@ click-wheel[data-pressed="select"] .center { filter: brightness(0.93); }
   .stage > .hint { display: none; }
   .credit { margin-top: 14px; }
 }
-@media (max-height: 619px) {
+@media (max-height: 619px) and (min-width: 701px), (max-height: 559px) {
   .credit { display: none; }
+}
+
+/* Wide screens get a pill in the corner; narrow ones get the link in the credit line. */
+.source-link {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--page-1) 70%, transparent);
+  color: var(--ink);
+  font: 500 13px/1.2 var(--ui);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.source-link:hover {
+  color: light-dark(#1d2026, #f1f2f5);
+  border-color: color-mix(in srgb, var(--ink) 55%, transparent);
+  background: var(--page-1);
+}
+.source-link:focus-visible, .credit-source:focus-visible { outline: 2px solid #3383e0; outline-offset: 3px; }
+.credit-source {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 4px;
+}
+.credit-source::before { content: "·"; margin-right: 0.2em; }
+.credit-source svg { width: 12px; height: 12px; }
+@media (max-width: 700px) {
+  .source-link { display: none; }
+  .credit-source { display: inline-flex; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pv.show .pv-cover { animation: none; }
-  .np-bar [data-slot="progress-indicator"], .knob, .hold ui-switch-thumb, .site-credit, .site-credit-mark { transition: none; }
+  .np-bar [data-slot="progress-indicator"], .knob, .hold ui-switch-thumb, .site-credit, .site-credit-mark, .source-link { transition: none; }
 }
