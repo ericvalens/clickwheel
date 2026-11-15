@@ -1,4 +1,7 @@
 import { announce, createLocalStorage, createTypeahead, isTypeaheadKey } from "@ui-sdk/core"
+import "@ui-sdk/web/meter"
+import "@ui-sdk/web/progress"
+import "@ui-sdk/web/switch"
 import { Engine, Player, STEPS } from "./audio.js"
 import { ALBUMS, PLAYLISTS, SONGS, albumOf, art, artistOf, genreOf, playlistSongs } from "./library.js"
 
@@ -24,6 +27,7 @@ const shuffled = (a) => {
 }
 const byTitle = (a, b) => a.title.localeCompare(b.title)
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)")
+const SLIDE = { duration: 260, easing: "cubic-bezier(0.25, 0.8, 0.25, 1)" }
 
 const BODIES = { silver: "Silver", black: "Black", white: "White", red: "Red" }
 const REPEAT = { off: "Off", one: "One", all: "All" }
@@ -51,7 +55,7 @@ class MenuView {
     this.top = 0
     this.typeahead = createTypeahead()
     this.el = h(`<div class="pane menu${opts.preview ? " split" : ""}">
-      <ul class="list" role="listbox" aria-label="${esc(title)}"></ul>
+      <ul class="list" aria-label="${esc(title)}"></ul>
       ${opts.preview ? `<div class="preview" aria-hidden="true"><div class="pv"></div><div class="pv"></div></div>` : ""}
       <div class="sb" aria-hidden="true"><i></i></div>
     </div>`)
@@ -74,7 +78,7 @@ class MenuView {
             const on = this.top + k === this.i
             const value = typeof it.value === "function" ? it.value() : it.value
             const tail = value != null ? `<span class="v">${esc(value)}</span>` : it.arrow === false ? "" : `<span class="arr">›</span>`
-            return `<li role="option" aria-selected="${on}" class="${on ? "on" : ""}"><span class="l">${esc(it.label)}</span>${tail}</li>`
+            return `<li${on ? ` class="on" aria-current="true"` : ""}><span class="l">${esc(it.label)}</span>${tail}</li>`
           })
           .join("")
       : `<li class="empty">No items</li>`
@@ -125,12 +129,13 @@ class MenuView {
       const song = this.app.player.song
       const album = song && k === 0 ? albumOf(song) : ALBUMS[a++ % ALBUMS.length]
       const layer = layers[k % 2]
-      layer.innerHTML = art(album.id)
+      const cover = art(album.id)
+      layer.innerHTML = `<div class="pv-bg">${cover}</div><div class="pv-cover">${cover}</div>`
       layers.forEach((l) => l.classList.toggle("show", l === layer))
       k++
     }
     flip()
-    this.slideshow = setInterval(flip, 4500)
+    if (!reduceMotion.matches) this.slideshow = setInterval(flip, 5200)
   }
 
   hide() {
@@ -152,12 +157,26 @@ class NowPlayingView {
         <div class="np-meta"><b class="t"></b><span class="ar"></span><span class="al"></span></div>
       </div>
       <div class="np-bar">
-        <div class="track"><i class="fill"></i><i class="knob"></i></div>
-        <div class="times"><span class="el"></span><span class="rem"></span></div>
+        <ui-progress class="bar" aria-label="Song position" value="0">
+          <ui-progress-track><ui-progress-indicator></ui-progress-indicator><i class="knob"></i></ui-progress-track>
+        </ui-progress>
+        <div class="times" aria-hidden="true"><span class="el"></span><span class="rem"></span></div>
       </div>
-      <div class="np-vol">${ICON.spkLo}<div class="track"><i class="fill"></i></div>${ICON.spkHi}</div>
+      <div class="np-vol">
+        ${ICON.spkLo}
+        <ui-meter class="bar" aria-label="Volume" value="0">
+          <ui-meter-track><ui-meter-indicator></ui-meter-indicator></ui-meter-track>
+        </ui-meter>
+        ${ICON.spkHi}
+      </div>
     </div>`)
     this.$ = (s) => this.el.querySelector(s)
+    this.bar = this.$("ui-progress")
+    this.volume = this.$("ui-meter")
+  }
+
+  show() {
+    this.bar.getValueLabel = (t) => `${fmt(t ?? 0)} of ${fmt(this.app.player.duration || 0)}`
   }
 
   refresh() {
@@ -179,12 +198,12 @@ class NowPlayingView {
     this.el.classList.toggle("vol", vol)
     this.el.classList.toggle("scrub", this.mode === "scrub")
     if (vol) {
-      this.$(".np-vol .fill").style.width = `${this.app.settings.volume * 100}%`
+      this.volume.setAttribute("value", Math.round(this.app.settings.volume * 100))
     } else if (song) {
       const t = player.time
       const d = player.duration
-      this.$(".np-bar .fill").style.width = `${(t / d) * 100}%`
-      this.$(".knob").style.left = `${(t / d) * 100}%`
+      this.bar.setAttribute("max", d.toFixed(2))
+      this.bar.setAttribute("value", t.toFixed(2))
       this.$(".el").textContent = fmt(t)
       this.$(".rem").textContent = `-${fmt(d - t)}`
     }
@@ -473,7 +492,7 @@ class AboutView {
     this.el = h(`<div class="pane about">
       <div class="about-name">Clickwheel</div>
       <dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
-      <div class="about-foot">A toy by Chimpipi</div>
+      <div class="about-foot">A toy by <img src="chimpipi-wordmark.webp" alt="Chimpipi" width="200" height="78" /></div>
     </div>`)
   }
   refresh() {}
@@ -491,7 +510,7 @@ export class App {
     this.panes = root.querySelector(".panes")
     this.statusTitle = root.querySelector(".st-title")
     this.statusLeft = root.querySelector(".st-left")
-    this.battFill = root.querySelector(".batt i")
+    this.batt = root.querySelector(".batt")
     this.wheel = root.querySelector("click-wheel")
     this.holdSwitch = root.querySelector(".hold")
 
@@ -527,12 +546,11 @@ export class App {
     this.wheel.addEventListener("mousedown", (e) => e.preventDefault())
     this.wheel.addEventListener("pointerup", () => this.engine.ensure())
 
-    this.holdSwitch.addEventListener("click", () => this.setHold(!this.held))
+    this.holdSwitch.addEventListener("checkedchange", (e) => this.setHold(e.detail.value))
+    this.holdSwitch.addEventListener("mousedown", (e) => e.preventDefault())
     addEventListener("keydown", (e) => this.onKey(e))
     this.wheelAcc = 0
     addEventListener("wheel", (e) => this.onScrollWheel(e), { passive: false })
-    addEventListener("resize", () => this.fit())
-    this.fit()
 
     navigator.getBattery?.()
       .then((b) => {
@@ -576,7 +594,6 @@ export class App {
 
   setHold(on) {
     this.held = on
-    this.holdSwitch.setAttribute("aria-pressed", String(on))
     this.wheel.locked = on
     this.updateStatus()
     announce(on ? "Hold on" : "Hold off")
@@ -587,13 +604,6 @@ export class App {
     void this.screen.offsetWidth
     this.screen.classList.add("flash-lock")
     this.wake()
-  }
-
-  // ---- layout ----
-
-  fit() {
-    const s = clamp(Math.min((innerWidth - 32) / 340, (innerHeight - 96) / 566), 0.5, 1.35)
-    this.root.style.setProperty("--s", s.toFixed(3))
   }
 
   // ---- navigation ----
@@ -624,21 +634,21 @@ export class App {
 
   slide(outEl, inEl, dir, animate) {
     if (!outEl) return
-    if (!animate || reduceMotion.matches) {
+    for (const el of [outEl, inEl]) el.getAnimations?.().forEach((a) => a.cancel())
+    if (!animate || reduceMotion.matches || !inEl.animate) {
       outEl.remove()
-      inEl.style.transform = ""
       return
     }
-    inEl.style.transition = outEl.style.transition = "none"
-    inEl.style.transform = `translateX(${dir * 100}%)`
-    outEl.style.transform = "translateX(0)"
-    void inEl.offsetWidth
-    inEl.style.transition = outEl.style.transition = ""
-    inEl.style.transform = "translateX(0)"
-    outEl.style.transform = `translateX(${-dir * 100}%)`
-    setTimeout(() => {
-      if (this.top?.el !== outEl) outEl.remove()
-    }, 320)
+    inEl.animate({ transform: [`translateX(${dir * 100}%)`, "translateX(0)"] }, SLIDE)
+    // A pane that comes back before it finishes leaving is canceled, and stays.
+    outEl
+      .animate({ transform: ["translateX(0)", `translateX(${-dir * 100}%)`] }, { ...SLIDE, fill: "forwards" })
+      .finished.then(
+        () => {
+          if (this.top?.el !== outEl) outEl.remove()
+        },
+        () => {}
+      )
   }
 
   // ---- input ----
@@ -702,7 +712,7 @@ export class App {
 
   onKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return
-    const onButton = e.target instanceof HTMLElement && e.target.closest("button")
+    const onButton = e.target instanceof HTMLElement && e.target.closest("button, ui-switch")
     const map = {
       ArrowDown: () => this.turn(1),
       ArrowUp: () => this.turn(-1),
@@ -852,9 +862,9 @@ export class App {
     const s = this.player.song
     this.statusTitle.textContent = this.top?.title ?? ""
     this.statusLeft.innerHTML = this.held ? ICON.lock : s ? (this.player.playing ? ICON.play : ICON.pause) : ""
-    this.battFill.style.width = `${Math.round(this.battery * 100)}%`
-    this.battFill.parentElement.classList.toggle("low", this.battery < 0.2)
-    this.battFill.parentElement.classList.toggle("charging", !!this.charging)
+    this.batt.setAttribute("value", Math.round(this.battery * 100))
+    this.batt.toggleAttribute("data-low", this.battery < 0.2)
+    this.batt.toggleAttribute("data-charging", !!this.charging)
     this.sync()
   }
 

@@ -4,13 +4,16 @@
   "type": "module",
   "scripts": {
     "build": "esbuild src/main.js --bundle --format=esm --minify --target=es2022 --outfile=public/app.js",
-    "dev": "esbuild src/main.js --bundle --format=esm --sourcemap --outfile=public/app.js --servedir=public --watch --serve=4321"
+    "dev": "esbuild src/main.js --bundle --format=esm --sourcemap --outfile=public/app.js --servedir=public --watch --serve=4321",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@ui-sdk/core": "0.1.0-beta.1",
-    "@ui-sdk/web": "0.1.0-beta.1"
+    "@ui-sdk/core": "0.1.0-beta.2",
+    "@ui-sdk/web": "0.1.0-beta.2"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.28.2",
+    "jsdom": "^29.1.1",
+    "vitest": "^5.1.0"
   }
 }

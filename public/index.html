@@ -3,26 +3,41 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Clickwheel</title>
+    <title translate="no">Clickwheel</title>
     <meta name="description" content="A pocket music player with a working click wheel. Every song is synthesized live in your browser. Built with Web Components and Vercel's UI SDK." />
-    <meta name="theme-color" content="#dfe2e7" />
+    <meta name="theme-color" content="#c9ced6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)" />
     <meta property="og:title" content="Clickwheel" />
     <meta property="og:description" content="Spin the wheel. Every song is synthesized live in your browser." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='1' width='20' height='30' rx='4' fill='%23e3e6ea' stroke='%23999'/%3E%3Crect x='9' y='4' width='14' height='10' rx='1' fill='%232f78d8'/%3E%3Ccircle cx='16' cy='22' r='6' fill='%23fff' stroke='%23aaa'/%3E%3Ccircle cx='16' cy='22' r='2.2' fill='%23ddd'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      // Sizes the player before first paint, so it never jumps once app.js loads.
+      ;(() => {
+        const fit = () => {
+          const h = innerHeight
+          const s = Math.min((innerWidth - 32) / 340, (h - (h < 620 ? 32 : h < 700 ? 72 : 124)) / 566)
+          document.documentElement.style.setProperty("--s", Math.max(0.5, Math.min(1.35, s)).toFixed(3))
+        }
+        fit()
+        addEventListener("resize", fit)
+      })()
+    </script>
     <script type="module" src="app.js"></script>
   </head>
   <body>
     <main class="stage">
       <music-player aria-label="Clickwheel">
         <div class="device" data-body="silver">
-          <button class="hold" type="button" aria-pressed="false" aria-label="Hold switch"><span></span></button>
+          <ui-switch class="hold" aria-label="Hold"><ui-switch-thumb></ui-switch-thumb></ui-switch>
           <div class="bezel">
             <div class="screen">
-              <div class="status" aria-hidden="true">
-                <span class="st-left"></span>
+              <div class="status">
+                <span class="st-left" aria-hidden="true"></span>
                 <span class="st-title"></span>
-                <span class="batt"><i></i></span>
+                <ui-meter class="batt" aria-label="Battery" value="82">
+                  <ui-meter-track><ui-meter-indicator></ui-meter-indicator></ui-meter-track>
+                </ui-meter>
               </div>
               <div class="panes"></div>
               <div class="glare" aria-hidden="true"></div>
@@ -41,9 +56,15 @@
       </music-player>
       <p class="hint">
         <span class="touch">Drag around the wheel to scroll. Tap the center to select. MENU goes back.</span>
-        <span class="keys">Keys: ↑ ↓ scroll · ⏎ select · esc back · space play · ← → skip · type to jump</span>
+        <span class="keys">↑ ↓ scroll · ⏎ select · esc back · space play · ← → skip · type to jump</span>
+      </p>
+      <p class="credit">
+        <a class="site-credit" href="https://chimpipi.com" target="_blank" rel="noopener noreferrer" aria-label="A toy by Chimpipi">
+          <span>A toy by</span>
+          <img class="site-credit-mark" src="chimpipi-wordmark.webp" alt="Chimpipi" width="200" height="78" />
+        </a>
+        <span>· built with <span translate="no">UI SDK</span> + Web Audio</span>
       </p>
     </main>
-    <p class="credit">A toy by Chimpipi · built with UI SDK + Web Audio</p>
   </body>
 </html>
