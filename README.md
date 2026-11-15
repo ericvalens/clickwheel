@@ -1,8 +1,8 @@
 # Clickwheel
 
-**Try it: [chimpipi-clickwheel.vercel.app](https://chimpipi-clickwheel.vercel.app)**
+**Try it: [ipod-ui-sdk.vercel.app](https://ipod-ui-sdk.vercel.app)**
 
-A pocket music player with a working click wheel, built with Web Components and
+An iPod-style pocket music player with a working click wheel, built with Web Components and
 [Vercel's UI SDK](https://ui-sdk.dev) — no framework. Every song is synthesized
 live in the browser with Web Audio, so there are no audio files at all.
 
@@ -16,7 +16,7 @@ live in the browser with Web Audio, so there are no audio files at all.
   browsers with WebMCP get `snapshot` / `query` / `act` tools. From the console:
 
   ```js
-  await agent.act({ steps: [{ ref: "Clickwheel", action: "setValue", args: ["Pier Pressure"] }] })
+  await agent.act({ steps: [{ ref: "iPod", action: "setValue", args: ["Pier Pressure"] }] })
   ```
 
 ## Develop

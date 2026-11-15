@@ -28,8 +28,8 @@ test("an agent can find every control by name", () => {
   const entries = agent.snapshot().filter((entry) => !entry.offPage && entry.component !== "more")
   for (const entry of entries) expect(entry.label, `${entry.component} ${entry.ref} has no name`).toBeTruthy()
   const labels = entries.map((entry) => entry.label)
-  for (const label of ["Clickwheel", "Click wheel", "Hold", "Battery"]) expect(labels, `${label} is missing`).toContain(label)
-  const player = entries.find((entry) => entry.label === "Clickwheel")
+  for (const label of ["iPod", "Click wheel", "Hold", "Battery"]) expect(labels, `${label} is missing`).toContain(label)
+  const player = entries.find((entry) => entry.label === "iPod")
   expect(player.actions).toEqual(expect.arrayContaining(["setValue", "play", "pause", "next", "previous", "setVolume", "shuffleAll"]))
 })
 
@@ -41,7 +41,7 @@ test("the wheel scrolls the menu and the center opens a row", async () => {
   expect(title()).toBe("Extras")
   expect(row()).toBe("Clock")
   wheel.api.press("menu")
-  expect(title()).toBe("Clickwheel")
+  expect(title()).toBe("iPod")
   expect(() => wheel.api.press("eject")).toThrow(/No eject button/)
 })
 
@@ -49,16 +49,16 @@ test("an agent turns the wheel and plays a song by title", async () => {
   const result = await agent.act({
     steps: [
       { ref: "Click wheel", action: "turn", args: [1] },
-      { ref: "Clickwheel", action: "setValue", args: ["Pier Pressure"] },
+      { ref: "iPod", action: "setValue", args: ["Pier Pressure"] },
     ],
   })
   expect(result.ok, result.error?.message).toBe(true)
   expect(row() ?? title()).toBeTruthy()
   expect(title()).toBe("Now Playing")
   expect(document.querySelector(".np-meta .t").textContent).toBe("Pier Pressure")
-  expect(agent.snapshot().find((entry) => entry.label === "Clickwheel").value).toBe("Pier Pressure")
+  expect(agent.snapshot().find((entry) => entry.label === "iPod").value).toBe("Pier Pressure")
 
-  const missing = await agent.act({ steps: [{ ref: "Clickwheel", action: "setValue", args: ["Free Bird"] }] })
+  const missing = await agent.act({ steps: [{ ref: "iPod", action: "setValue", args: ["Free Bird"] }] })
   expect(missing.ok).toBe(false)
 })
 
@@ -72,7 +72,7 @@ test("the song position is a named progress bar", async () => {
 
 test("Hold locks the wheel, for a person or an agent", async () => {
   wheel.api.press("menu")
-  expect(title()).toBe("Clickwheel")
+  expect(title()).toBe("iPod")
   const before = row()
 
   const result = await agent.act({ steps: [{ ref: "Hold", action: "setChecked", args: [true] }] })

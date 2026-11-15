@@ -11,7 +11,7 @@ Object.assign(window, { clickwheel: app })
 // Agents: the wheel and the player both join UI SDK's agent bridge. Browsers
 // with WebMCP get snapshot / query / act tools; anyone can try it from the
 // console:
-//   await agent.act({ steps: [{ ref: "Clickwheel", action: "setValue", args: ["Pier Pressure"] }] })
+//   await agent.act({ steps: [{ ref: "iPod", action: "setValue", args: ["Pier Pressure"] }] })
 const agent = createAgent()
 Object.assign(window, { agent })
 

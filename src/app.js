@@ -490,7 +490,7 @@ class AboutView {
       ["Version", "1.0"],
     ]
     this.el = h(`<div class="pane about">
-      <div class="about-name">Clickwheel</div>
+      <div class="about-name">iPod</div>
       <dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
     </div>`)
   }
@@ -532,7 +532,7 @@ export class App {
     this.lastInput = performance.now()
 
     this.applyBody()
-    this.push(new MenuView(this, "Clickwheel", () => this.rootItems(), { preview: true }), false)
+    this.push(new MenuView(this, "iPod", () => this.rootItems(), { preview: true }), false)
 
     // The wheel is a UI SDK primitive; its callbacks arrive as DOM events.
     this.wheel.addEventListener("turn", (e) => this.input(() => this.turn(e.detail.value)))
