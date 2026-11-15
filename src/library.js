@@ -3,7 +3,7 @@
 export const ALBUMS = [
   { id: "first-click", title: "First Click", artist: "Pocket Orchestra", genre: "Chiptune" },
   { id: "coastline", title: "Coastline FM", artist: "Ventura Night Drive", genre: "Synthwave" },
-  { id: "small-biz", title: "Small Biz Beats", artist: "Chimpipi Sound System", genre: "Lo-fi" },
+  { id: "small-biz", title: "Small Biz Beats", artist: "Main Street Sound System", genre: "Lo-fi" },
   { id: "low-battery", title: "Low Battery Lullabies", artist: "Pocket Orchestra", genre: "Ambient" },
 ]
 

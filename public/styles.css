@@ -1,18 +1,9 @@
 @layer ui-sdk;
 
 :root {
-  --page-1: #f1f2f5;
-  --page-2: #c9ced6;
-  --ink: #5b616b;
+  --ink: #6b7079;
   --ui: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color-scheme: light dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page-1: #30333a;
-    --page-2: #0c0d10;
-    --ink: #9aa0aa;
-  }
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -21,8 +12,7 @@ html, body { margin: 0; height: 100%; }
   html { overscroll-behavior: none; }
 }
 body {
-  background: radial-gradient(120% 90% at 50% 18%, var(--page-1), var(--page-2));
-  background-color: var(--page-2);
+  background: #fff;
   font-family: var(--ui);
   color: var(--ink);
   overflow: hidden;
@@ -406,19 +396,6 @@ music-player {
 .about dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; font: 500 12px var(--ui); }
 .about dt { color: #555; }
 .about dd { margin: 0; text-align: right; font-weight: 600; }
-.about-foot {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font: 500 10.5px var(--ui);
-  color: #888;
-}
-.about-foot img { display: block; width: auto; height: 16px; transform: translateY(1.5px); }
 
 /* ---------------- the wheel ---------------- */
 
@@ -520,85 +497,34 @@ click-wheel[data-pressed="select"] .center { filter: brightness(0.93); }
 .stage > .hint span { display: block; }
 @media (hover: none) { .stage > .hint .keys { display: none; } }
 @media (hover: hover) { .stage > .hint .touch { display: none; } }
-.credit {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0 0.45em;
-  margin: 6px 0 0;
-  padding-bottom: env(safe-area-inset-bottom);
-  font: 500 11px/20px var(--ui);
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
-}
-.site-credit {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  color: inherit;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: color 0.2s ease;
-}
-.site-credit:hover { color: var(--ink); }
-.site-credit:focus-visible { outline: 2px solid #3383e0; outline-offset: 3px; }
-/* The mark is cropped to its ink, so it sits a touch high next to the caption. */
-.site-credit-mark {
-  display: block;
-  width: auto;
-  height: 18px;
-  opacity: 0.72;
-  transform: translateY(1.5px);
-  transition: opacity 0.2s ease;
-}
-.site-credit:hover .site-credit-mark { opacity: 1; }
 @media (max-height: 699px) {
   .stage > .hint { display: none; }
-  .credit { margin-top: 14px; }
-}
-@media (max-height: 619px) and (min-width: 701px), (max-height: 559px) {
-  .credit { display: none; }
 }
 
-/* Wide screens get a pill in the corner; narrow ones get the link in the credit line. */
 .source-link {
   position: fixed;
   top: max(16px, env(safe-area-inset-top));
-  right: max(16px, env(safe-area-inset-right));
+  right: max(20px, env(safe-area-inset-right));
   z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 12px 6px 10px;
-  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--page-1) 70%, transparent);
-  color: var(--ink);
+  background: rgba(255, 255, 255, 0.88);
+  color: #3f3f46;
   font: 500 13px/1.2 var(--ui);
   text-decoration: none;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
 }
-.source-link:hover {
-  color: light-dark(#1d2026, #f1f2f5);
-  border-color: color-mix(in srgb, var(--ink) 55%, transparent);
-  background: var(--page-1);
-}
-.source-link:focus-visible, .credit-source:focus-visible { outline: 2px solid #3383e0; outline-offset: 3px; }
-.credit-source {
-  display: none;
-  align-items: center;
-  gap: 4px;
-  color: inherit;
-  text-decoration: none;
-  border-radius: 4px;
-}
-.credit-source::before { content: "·"; margin-right: 0.2em; }
-.credit-source svg { width: 12px; height: 12px; }
+.source-link:hover { color: #09090b; border-color: rgba(15, 23, 42, 0.24); background: #fff; }
+.source-link:focus-visible { outline: 2px solid #3383e0; outline-offset: 3px; }
+/* On a phone the pill would sit on the player, so the player starts below it. */
 @media (max-width: 700px) {
-  .source-link { display: none; }
-  .credit-source { display: inline-flex; }
+  .stage { padding-top: 56px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pv.show .pv-cover { animation: none; }
-  .np-bar [data-slot="progress-indicator"], .knob, .hold ui-switch-thumb, .site-credit, .site-credit-mark, .source-link { transition: none; }
+  .np-bar [data-slot="progress-indicator"], .knob, .hold ui-switch-thumb, .source-link { transition: none; }
 }

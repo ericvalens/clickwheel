@@ -492,7 +492,6 @@ class AboutView {
     this.el = h(`<div class="pane about">
       <div class="about-name">Clickwheel</div>
       <dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
-      <div class="about-foot">A toy by <img src="chimpipi-wordmark.webp" alt="Chimpipi" width="200" height="78" /></div>
     </div>`)
   }
   refresh() {}
