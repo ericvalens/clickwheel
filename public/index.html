@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Clickwheel</title>
+    <meta name="description" content="A pocket music player with a working click wheel. Every song is synthesized live in your browser. Built with Web Components and Vercel's UI SDK." />
+    <meta name="theme-color" content="#dfe2e7" />
+    <meta property="og:title" content="Clickwheel" />
+    <meta property="og:description" content="Spin the wheel. Every song is synthesized live in your browser." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='1' width='20' height='30' rx='4' fill='%23e3e6ea' stroke='%23999'/%3E%3Crect x='9' y='4' width='14' height='10' rx='1' fill='%232f78d8'/%3E%3Ccircle cx='16' cy='22' r='6' fill='%23fff' stroke='%23aaa'/%3E%3Ccircle cx='16' cy='22' r='2.2' fill='%23ddd'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <main class="stage">
+      <music-player aria-label="Clickwheel">
+        <div class="device" data-body="silver">
+          <button class="hold" type="button" aria-pressed="false" aria-label="Hold switch"><span></span></button>
+          <div class="bezel">
+            <div class="screen">
+              <div class="status" aria-hidden="true">
+                <span class="st-left"></span>
+                <span class="st-title"></span>
+                <span class="batt"><i></i></span>
+              </div>
+              <div class="panes"></div>
+              <div class="glare" aria-hidden="true"></div>
+            </div>
+          </div>
+          <click-wheel step="15" aria-label="Click wheel">
+            <click-wheel-ring class="wheel">
+              <click-wheel-button name="menu"><button class="lbl lbl-menu" type="button" aria-label="Menu" tabindex="-1">MENU</button></click-wheel-button>
+              <click-wheel-button name="next"><button class="lbl lbl-next" type="button" aria-label="Next" tabindex="-1"><svg viewBox="0 0 24 12" width="21" height="10.5" aria-hidden="true"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /><rect x="19.2" y="1" width="2.4" height="10" /></svg></button></click-wheel-button>
+              <click-wheel-button name="play"><button class="lbl lbl-play" type="button" aria-label="Play or pause" tabindex="-1"><svg viewBox="0 0 24 12" width="21" height="10.5" aria-hidden="true"><path d="M1 1l8 5-8 5z" /><rect x="13" y="1" width="3" height="10" /><rect x="19" y="1" width="3" height="10" /></svg></button></click-wheel-button>
+              <click-wheel-button name="prev"><button class="lbl lbl-prev" type="button" aria-label="Previous" tabindex="-1"><svg viewBox="0 0 24 12" width="21" height="10.5" aria-hidden="true"><path d="M23 1l-8 5 8 5zM14 1L6 6l8 5z" /><rect x="2.4" y="1" width="2.4" height="10" /></svg></button></click-wheel-button>
+              <click-wheel-center><button class="center" type="button" aria-label="Select" tabindex="-1"></button></click-wheel-center>
+            </click-wheel-ring>
+          </click-wheel>
+        </div>
+      </music-player>
+      <p class="hint">
+        <span class="touch">Drag around the wheel to scroll. Tap the center to select. MENU goes back.</span>
+        <span class="keys">Keys: ↑ ↓ scroll · ⏎ select · esc back · space play · ← → skip · type to jump</span>
+      </p>
+    </main>
+    <p class="credit">A toy by Chimpipi · built with UI SDK + Web Audio</p>
+  </body>
+</html>
